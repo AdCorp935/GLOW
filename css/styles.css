@@ -5,6 +5,8 @@
    ========================================================================== */
 
 :root {
+  /* Le site garde ses propres couleurs : on refuse les modes sombres automatiques des navigateurs. */
+  color-scheme: only light;
   /* Fonds */
   --bg: #F6F2EC;
   --hero-bg: #F2ECE4;
@@ -705,6 +707,7 @@ button { cursor: pointer; }
   margin: 0 10px;
   border-radius: var(--radius-section);
   background: var(--dark);
+  background-color: #13100E !important;
   color: var(--dark-text);
   transform-origin: 50% 0;
 }
