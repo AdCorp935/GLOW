@@ -1,0 +1,664 @@
+/* ==========================================================================
+   Glow — Réalisations
+   Carrousel des sites clients. Chaque diapositive est un vrai hero en
+   HTML/CSS, dessiné en 1440 × 900 (bureau) ou 390 × 760 (mobile) puis mis à
+   l'échelle du cadre par main.js. Les requêtes de conteneur (@container site)
+   basculent chaque hero sur sa version mobile.
+   ========================================================================== */
+
+/* ---------- Cadre du carrousel ---------- */
+
+.showcase { position: relative; }
+
+.showcase__frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  background: #FFFFFF;
+  border: 1px solid var(--card-line);
+  box-shadow: 0 60px 100px -60px rgba(60, 25, 5, .5), 0 24px 48px -36px rgba(60, 25, 5, .35);
+}
+
+.showcase__bar {
+  height: 46px;
+  padding: 0 18px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  background: #FBF8F4;
+  border-bottom: 1px solid var(--line-soft);
+}
+.showcase__dots { display: flex; gap: 7px; }
+.showcase__dots i { width: 11px; height: 11px; border-radius: 50%; background: #E6DDD2; }
+.showcase__url {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: min(300px, 46vw);
+  height: 28px;
+  padding: 0 16px;
+  border-radius: 8px;
+  background: #F1EBE3;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.showcase__url svg { flex: none; width: 11px; height: 11px; color: var(--muted-2); }
+.showcase__url-text { transition: opacity .3s; }
+.showcase__count { justify-self: end; font-size: 12.5px; font-weight: 600; color: var(--muted-2); font-variant-numeric: tabular-nums; }
+
+.showcase__viewport {
+  position: relative;
+  overflow: hidden;
+  height: calc(var(--dh, 900) * var(--ds, .78) * 1px);
+  background: #EFE9E1;
+  touch-action: pan-y;
+}
+
+.showcase__slide { position: absolute; inset: 0; visibility: hidden; }
+.showcase__slide.is-active,
+.showcase__slide.is-leaving { visibility: visible; }
+.showcase__slide.is-active { z-index: 2; }
+.showcase__slide.is-leaving { z-index: 1; }
+
+/* ---------- Légende, onglets et commandes ---------- */
+
+.showcase__below { margin-top: 26px; display: flex; flex-direction: column; gap: 22px; }
+
+.showcase__details { display: grid; }
+.showcase__detail {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px 40px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: opacity .5s var(--ease), transform .6s var(--ease), visibility 0s .6s;
+}
+.showcase__detail.is-active { opacity: 1; visibility: visible; transform: none; transition-delay: .15s, .15s, 0s; }
+
+.showcase__name { margin: 0; font-size: clamp(26px, 2.6vw, 34px); font-weight: 600; letter-spacing: -0.035em; line-height: 1.1; }
+.showcase__type { margin: 8px 0 0; font-size: 15.5px; color: var(--muted); }
+.showcase__services { margin: 14px 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+.showcase__services li { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); font-size: 13px; font-weight: 500; color: var(--ink-2); }
+
+.showcase__result { margin: 0; display: flex; align-items: baseline; gap: 12px; text-align: right; }
+.showcase__result strong {
+  font-size: clamp(40px, 4.4vw, 60px);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  color: var(--orange-deep);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.showcase__result span { max-width: 13ch; font-size: 15px; line-height: 1.35; color: var(--muted); text-align: left; }
+
+.showcase__controls { display: flex; align-items: center; gap: 24px; }
+
+.showcase__tabs { flex: 1; min-width: 0; display: flex; gap: 6px; }
+.showcase__tab {
+  flex: 1;
+  min-width: 0;
+  padding: 16px 0 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--muted-2);
+  transition: color .25s;
+}
+.showcase__tab:hover,
+.showcase__tab[aria-selected="true"] { color: var(--ink); }
+.showcase__tab-bar { position: relative; display: block; height: 2px; margin-bottom: 14px; border-radius: 2px; background: var(--line); overflow: hidden; transition: background .25s; }
+.showcase__tab:hover .showcase__tab-bar { background: #CFC1B2; }
+.showcase__tab-bar span { position: absolute; inset: 0; background: var(--orange); transform-origin: 0 50%; transform: scaleX(0); }
+.showcase__tab[aria-selected="true"] .showcase__tab-bar span { transform: scaleX(var(--progress, 1)); }
+.showcase__tab-label { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+.showcase__buttons { flex: none; display: flex; gap: 8px; }
+.showcase__btn {
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  transition: background .25s, border-color .25s, color .25s, transform .3s var(--ease);
+}
+.showcase__btn:hover { background: var(--ink); border-color: var(--ink); color: #FFFFFF; }
+.showcase__btn:active { transform: scale(.94); }
+.showcase__btn svg { width: 16px; height: 16px; }
+.showcase__btn .icon-play { display: none; }
+.showcase__btn[aria-pressed="true"] .icon-play { display: block; }
+.showcase__btn[aria-pressed="true"] .icon-pause { display: none; }
+
+@media (max-width: 720px) {
+  .showcase__bar { height: 38px; padding: 0 12px; }
+  .showcase__dots i { width: 8px; height: 8px; }
+  .showcase__url { min-width: 0; height: 24px; padding: 0 12px; font-size: 12px; }
+  .showcase__result { text-align: left; }
+  .showcase__controls { flex-wrap: wrap; gap: 16px; }
+  .showcase__tabs { flex-basis: 100%; }
+  .showcase__tab { padding-top: 12px; }
+  .showcase__tab-bar { margin-bottom: 0; }
+  .showcase__tab-label { display: none; }
+  .showcase__buttons { margin-left: auto; }
+}
+
+/* ---------- Socle commun des sites ---------- */
+
+.site {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(var(--dw, 1440) * 1px);
+  height: calc(var(--dh, 900) * 1px);
+  overflow: hidden;
+  transform: scale(var(--ds, .78));
+  transform-origin: 0 0;
+  container: site / inline-size;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+:where(.site) p,
+:where(.site) ul { margin: 0; padding: 0; }
+:where(.site) ul { list-style: none; }
+:where(.site) img { display: block; max-width: none; }
+
+.site-burger { display: none; width: 26px; height: 12px; border-top: 2px solid currentColor; border-bottom: 2px solid currentColor; }
+@container site (max-width: 700px) {
+  .site-burger { display: block; }
+}
+
+/* ---------- 1. Maison Aube — cosmétiques naturels ---------- */
+
+.site--aube { display: flex; flex-direction: column; background: #F4EEE6; color: #2B211A; font-family: 'Jost', 'Montserrat', sans-serif; }
+.aube-bar {
+  flex: none;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  background: #2B211A;
+  color: #EDE3D6;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.aube-nav {
+  flex: none;
+  height: 84px;
+  padding: 0 56px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  border-bottom: 1px solid rgba(43, 33, 26, .12);
+  font-size: 14.5px;
+  color: #3A2C22;
+}
+.aube-nav__links, .aube-nav__tools { display: flex; gap: 34px; }
+.aube-nav__tools { justify-self: end; }
+.aube-logo { font-size: 18px; font-weight: 500; letter-spacing: .44em; margin-right: -.44em; text-transform: uppercase; }
+.aube-hero { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; }
+.aube-hero__text { align-self: center; padding: 0 64px 24px 104px; }
+.aube-eyebrow { font-size: 12.5px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; color: #9A6B4B; }
+.aube-title { margin-top: 26px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 112px; font-weight: 500; line-height: .9; letter-spacing: -0.025em; }
+.aube-title em { font-style: italic; color: #8A5A3C; }
+.aube-lead { margin-top: 30px; max-width: 440px; font-size: 18.5px; line-height: 1.65; color: #5E4E42; }
+.aube-actions { margin-top: 42px; display: flex; align-items: center; gap: 30px; }
+.aube-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 58px;
+  padding: 0 36px;
+  background: #2B211A;
+  color: #F4EEE6;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+.aube-link { padding-bottom: 4px; border-bottom: 1px solid currentColor; font-size: 15.5px; font-weight: 500; }
+.aube-reviews { margin-top: 56px; display: flex; align-items: center; gap: 10px; font-size: 14px; color: #6B5B4F; }
+.aube-stars { color: #B07A4F; font-size: 13px; letter-spacing: .12em; }
+.aube-hero__media { position: relative; overflow: hidden; }
+.aube-hero__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 55%; }
+.aube-product {
+  position: absolute;
+  left: 40px;
+  bottom: 40px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 28px 12px 12px;
+  background: rgba(250, 246, 240, .93);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 20px 40px -24px rgba(43, 33, 26, .5);
+}
+.aube-product img { width: 64px; height: 64px; object-fit: cover; }
+.aube-product__name { font-size: 16px; font-weight: 500; }
+.aube-product__meta { margin-top: 2px; font-size: 13px; color: #7A6A5E; }
+.aube-product__price { margin-left: 22px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 27px; font-weight: 500; }
+
+@container site (max-width: 700px) {
+  .aube-bar { height: 32px; font-size: 9.5px; letter-spacing: .12em; }
+  .aube-bar__more { display: none; }
+  .aube-nav { height: 58px; padding: 0 20px; }
+  .aube-nav__links, .aube-nav__extra { display: none; }
+  .aube-nav__tools { font-size: 13px; }
+  .aube-logo { font-size: 13px; letter-spacing: .32em; margin-right: -.32em; }
+  .aube-hero { grid-template-columns: 1fr; grid-template-rows: 318px auto; }
+  .aube-hero__media { order: -1; }
+  .aube-hero__text { align-self: start; padding: 26px 24px 0; }
+  .aube-eyebrow { font-size: 10.5px; }
+  .aube-title { margin-top: 14px; font-size: 56px; }
+  .aube-lead { margin-top: 14px; font-size: 15px; line-height: 1.55; }
+  .aube-actions { margin-top: 22px; flex-direction: column; align-items: flex-start; gap: 16px; }
+  .aube-btn { height: 50px; padding: 0 24px; font-size: 11.5px; white-space: nowrap; }
+  .aube-link { font-size: 14px; }
+  .aube-reviews { display: none; }
+  .aube-product { left: 14px; bottom: 14px; gap: 12px; padding: 8px 16px 8px 8px; }
+  .aube-product img { width: 44px; height: 44px; }
+  .aube-product__name { font-size: 13.5px; }
+  .aube-product__meta { font-size: 11px; }
+  .aube-product__price { margin-left: 10px; font-size: 21px; }
+}
+
+/* ---------- 2. Atelier Nord — architecture ---------- */
+
+.site--nord { background: #1E1E1C; color: #FFFFFF; font-family: 'Inter Tight', 'Montserrat', sans-serif; }
+.nord-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 62% 50%; }
+.nord-shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(12, 12, 11, .72) 0%, rgba(12, 12, 11, .38) 38%, rgba(12, 12, 11, 0) 62%),
+    linear-gradient(0deg, rgba(12, 12, 11, .55) 0%, rgba(12, 12, 11, 0) 46%),
+    linear-gradient(180deg, rgba(12, 12, 11, .45) 0%, rgba(12, 12, 11, 0) 22%);
+}
+.nord-nav {
+  position: absolute;
+  z-index: 2;
+  inset: 0 0 auto;
+  height: 104px;
+  padding: 0 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nord-logo { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 34px; font-style: italic; font-weight: 500; letter-spacing: -0.01em; }
+.nord-nav__links { display: flex; align-items: center; gap: 40px; font-size: 15px; color: rgba(255, 255, 255, .86); }
+.nord-nav__cta { padding: 11px 22px; border: 1px solid rgba(255, 255, 255, .55); border-radius: 999px; color: #FFFFFF; }
+.nord-hero { position: absolute; z-index: 2; left: 64px; bottom: 84px; width: 720px; }
+.nord-kicker { font-size: 13px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; color: rgba(255, 255, 255, .78); }
+.nord-title { margin-top: 26px; font-size: 136px; font-weight: 300; line-height: .9; letter-spacing: -0.055em; }
+.nord-lead { margin-top: 30px; max-width: 430px; font-size: 18px; line-height: 1.6; color: rgba(255, 255, 255, .84); }
+.nord-link {
+  margin-top: 34px;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, .6);
+  font-size: 15.5px;
+  font-weight: 500;
+}
+.nord-card {
+  position: absolute;
+  z-index: 2;
+  right: 64px;
+  bottom: 84px;
+  width: 330px;
+  padding: 24px 26px;
+  background: rgba(20, 20, 18, .34);
+  border: 1px solid rgba(255, 255, 255, .22);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+.nord-card__label { font-size: 11.5px; letter-spacing: .2em; text-transform: uppercase; color: rgba(255, 255, 255, .7); }
+.nord-card__title { margin-top: 12px; font-size: 26px; letter-spacing: -0.02em; }
+.nord-card__meta { margin-top: 6px; font-size: 14px; color: rgba(255, 255, 255, .75); }
+.nord-card__nav {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, .2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  letter-spacing: .08em;
+}
+.nord-card__arrows { display: flex; gap: 8px; }
+.nord-card__arrows i {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, .4);
+  font-style: normal;
+}
+
+@container site (max-width: 700px) {
+  .nord-bg { object-position: 70% 50%; }
+  .nord-nav { height: 70px; padding: 0 22px; }
+  .nord-nav__links { display: none; }
+  .nord-logo { font-size: 25px; }
+  .nord-hero { left: 22px; right: 22px; bottom: 46px; width: auto; }
+  .nord-kicker { font-size: 10.5px; letter-spacing: .18em; }
+  .nord-title { margin-top: 14px; font-size: 66px; }
+  .nord-lead { margin-top: 16px; font-size: 14.5px; }
+  .nord-link { margin-top: 22px; font-size: 14px; }
+  .nord-card { display: none; }
+}
+
+/* ---------- 3. Solaris Énergie — panneaux solaires ---------- */
+
+.site--sol { background: #0A1A33; color: #FFFFFF; font-family: 'Manrope', 'Montserrat', sans-serif; }
+.sol-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 100%; }
+.sol-shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(6, 20, 44, .9) 0%, rgba(6, 20, 44, .66) 38%, rgba(6, 20, 44, .16) 72%, rgba(6, 20, 44, .06) 100%),
+    linear-gradient(180deg, rgba(6, 20, 44, .5) 0%, rgba(6, 20, 44, 0) 20%);
+}
+.sol-nav { position: absolute; z-index: 2; inset: 0 0 auto; height: 92px; padding: 0 64px; display: flex; align-items: center; gap: 56px; }
+.sol-logo { display: flex; align-items: center; gap: 12px; font-size: 19px; font-weight: 800; letter-spacing: .2em; }
+.sol-logo i { flex: none; width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #FFE9A6, #FFC545 55%, #FF9A2E); box-shadow: 0 0 18px rgba(255, 197, 69, .6); }
+.sol-logo small { margin-left: -4px; font-size: 12px; font-weight: 600; letter-spacing: .04em; color: rgba(255, 255, 255, .65); }
+.sol-nav__links { display: flex; gap: 36px; font-size: 15px; font-weight: 600; color: rgba(255, 255, 255, .85); }
+.sol-nav__tools { margin-left: auto; display: flex; align-items: center; gap: 26px; font-size: 15px; font-weight: 600; }
+.sol-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 58px;
+  padding: 0 30px;
+  border-radius: 14px;
+  background: #FFC545;
+  color: #0A1A33;
+  font-size: 16px;
+  font-weight: 800;
+}
+.sol-btn--sm { height: 46px; padding: 0 22px; border-radius: 12px; font-size: 14.5px; }
+.sol-hero { position: absolute; z-index: 2; inset: 92px 72px 0 80px; display: flex; align-items: center; justify-content: space-between; gap: 64px; }
+.sol-copy { width: 640px; padding-bottom: 12px; }
+.sol-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px 9px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .1);
+  border: 1px solid rgba(255, 255, 255, .22);
+  font-size: 14px;
+  font-weight: 600;
+}
+.sol-badge span { width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; background: #3DDC97; color: #06312A; font-size: 12px; font-weight: 800; }
+.sol-title { margin-top: 28px; font-size: 78px; font-weight: 800; line-height: 1.02; letter-spacing: -0.04em; }
+.sol-title span { color: #FFC545; }
+.sol-lead { margin-top: 26px; max-width: 540px; font-size: 19px; font-weight: 500; line-height: 1.6; color: rgba(255, 255, 255, .82); }
+.sol-actions { margin-top: 38px; display: flex; gap: 14px; }
+.sol-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 58px;
+  padding: 0 26px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, .35);
+  font-size: 16px;
+  font-weight: 700;
+}
+.sol-trust { margin-top: 52px; display: flex; gap: 32px; font-size: 14.5px; color: rgba(255, 255, 255, .75); }
+.sol-trust b { color: #FFFFFF; font-weight: 800; }
+.sol-sim {
+  flex: none;
+  width: 420px;
+  padding: 32px;
+  border-radius: 22px;
+  background: #FFFFFF;
+  color: #0A1A33;
+  box-shadow: 0 40px 80px -30px rgba(0, 0, 0, .55);
+}
+.sol-sim__title { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
+.sol-sim__label { margin-top: 24px; font-size: 13.5px; font-weight: 600; color: #5B6B82; }
+.sol-sim__value { margin-top: 6px; font-size: 34px; font-weight: 800; letter-spacing: -0.03em; }
+.sol-sim__range { position: relative; display: block; margin-top: 14px; height: 6px; border-radius: 6px; background: #E6ECF4; }
+.sol-sim__range span { position: absolute; inset: 0 58% 0 0; border-radius: inherit; background: #1F5BD6; }
+.sol-sim__range i {
+  position: absolute;
+  top: 50%;
+  left: 42%;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 5px solid #1F5BD6;
+  box-shadow: 0 4px 10px rgba(10, 26, 51, .25);
+}
+.sol-sim__chips { margin-top: 12px; display: flex; gap: 8px; }
+.sol-sim__chips span {
+  flex: 1;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  border: 1px solid #DCE3EE;
+  font-size: 14px;
+  font-weight: 700;
+  color: #3A4A62;
+}
+.sol-sim__chips .is-on { background: #0A1A33; border-color: #0A1A33; color: #FFFFFF; }
+.sol-sim__result { margin-top: 24px; padding: 18px 20px; border-radius: 14px; background: #F1F5FB; display: flex; flex-direction: column; gap: 4px; }
+.sol-sim__result span { font-size: 13.5px; font-weight: 600; color: #5B6B82; }
+.sol-sim__result b { font-size: 30px; font-weight: 800; letter-spacing: -0.03em; color: #0E8F5B; }
+.sol-sim__btn { margin-top: 18px; height: 56px; display: grid; place-items: center; border-radius: 14px; background: #0A1A33; color: #FFFFFF; font-size: 15.5px; font-weight: 800; }
+
+@container site (max-width: 700px) {
+  .sol-shade { background: linear-gradient(180deg, rgba(6, 20, 44, .82) 0%, rgba(6, 20, 44, .62) 55%, rgba(6, 20, 44, .35) 100%); }
+  .sol-nav { height: 66px; padding: 0 20px; justify-content: space-between; }
+  .sol-nav__links, .sol-nav__tools { display: none; }
+  .sol-logo { gap: 9px; font-size: 14px; }
+  .sol-logo i { width: 17px; height: 17px; }
+  .sol-hero { inset: 66px 20px 0; align-items: flex-start; }
+  .sol-copy { width: auto; padding-top: 40px; }
+  .sol-badge { padding: 7px 12px 7px 8px; font-size: 11.5px; }
+  .sol-badge span { width: 18px; height: 18px; font-size: 10px; }
+  .sol-title { margin-top: 20px; font-size: 44px; }
+  .sol-lead { margin-top: 16px; font-size: 15px; }
+  .sol-actions { margin-top: 26px; flex-direction: column; gap: 10px; }
+  .sol-btn, .sol-ghost { height: 52px; font-size: 15px; }
+  .sol-trust { margin-top: 28px; flex-wrap: wrap; gap: 8px 16px; font-size: 12px; }
+  .sol-sim { display: none; }
+}
+
+/* ---------- 4. Studio Lune — yoga et bien-être ---------- */
+
+.site--lune { background: #F2F0E9; color: #2F3E35; font-family: 'Jost', 'Montserrat', sans-serif; }
+.lune-nav { height: 96px; padding: 0 72px; display: flex; align-items: center; gap: 64px; }
+.lune-logo { display: flex; align-items: center; gap: 12px; font-size: 21px; font-weight: 600; letter-spacing: -0.01em; }
+.lune-logo i { flex: none; width: 22px; height: 22px; border-radius: 50%; box-shadow: inset -7px 3px 0 0 #2F3E35; }
+.lune-nav__links { display: flex; gap: 38px; font-size: 15.5px; color: #4E5E53; }
+.lune-nav__tools { margin-left: auto; display: flex; align-items: center; gap: 28px; font-size: 15.5px; }
+.lune-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 58px;
+  padding: 0 32px;
+  border-radius: 999px;
+  background: #2F3E35;
+  color: #F2F0E9;
+  font-size: 16px;
+  font-weight: 500;
+}
+.lune-btn--sm { height: 46px; padding: 0 24px; font-size: 15px; }
+.lune-hero { height: 804px; padding: 0 72px 40px 104px; display: grid; grid-template-columns: 1.05fr .95fr; align-items: center; }
+.lune-eyebrow { font-size: 13px; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; color: #7A957D; }
+.lune-title { margin-top: 26px; font-family: 'Fraunces', Georgia, serif; font-size: 88px; font-weight: 400; line-height: .98; letter-spacing: -0.035em; }
+.lune-title em { font-style: italic; color: #6E8B72; }
+.lune-lead { margin-top: 30px; max-width: 470px; font-size: 18.5px; line-height: 1.65; color: #58685D; }
+.lune-actions { margin-top: 40px; display: flex; gap: 14px; }
+.lune-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 58px;
+  padding: 0 30px;
+  border-radius: 999px;
+  border: 1px solid rgba(47, 62, 53, .3);
+  font-size: 16px;
+  font-weight: 500;
+}
+.lune-proof { margin-top: 48px; display: flex; align-items: center; gap: 14px; font-size: 15px; color: #58685D; }
+.lune-faces { display: flex; }
+.lune-faces i { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #F2F0E9; background: #DCE3D3; }
+.lune-faces i + i { margin-left: -10px; background: #E8D9C8; }
+.lune-faces i:nth-child(3) { background: #D8D0E4; }
+.lune-visual { position: relative; justify-self: end; width: 560px; height: 700px; }
+.lune-arch { position: absolute; inset: 0; overflow: hidden; border-radius: 280px 280px 28px 28px; }
+.lune-arch img { width: 100%; height: 100%; object-fit: cover; object-position: 40% 50%; }
+.lune-card {
+  position: absolute;
+  left: -84px;
+  bottom: 56px;
+  width: 330px;
+  padding: 22px 24px;
+  border-radius: 22px;
+  background: #FFFFFF;
+  box-shadow: 0 30px 60px -30px rgba(47, 62, 53, .45);
+}
+.lune-card__label { font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: #7A957D; }
+.lune-card__time { margin-top: 10px; font-family: 'Fraunces', Georgia, serif; font-size: 26px; letter-spacing: -0.02em; }
+.lune-card__class { margin-top: 6px; font-size: 14.5px; color: #58685D; }
+.lune-card__foot { margin-top: 18px; padding-top: 16px; border-top: 1px solid #ECEBE3; display: flex; align-items: center; justify-content: space-between; }
+.lune-card__spots { font-size: 13.5px; font-weight: 500; color: #B0674A; }
+.lune-card__btn { display: inline-flex; align-items: center; height: 40px; padding: 0 18px; border-radius: 999px; background: #2F3E35; color: #FFFFFF; font-size: 14px; }
+
+@container site (max-width: 700px) {
+  .lune-nav { height: 64px; padding: 0 20px; justify-content: space-between; }
+  .lune-nav__links, .lune-nav__tools { display: none; }
+  .lune-logo { font-size: 17px; gap: 9px; }
+  .lune-logo i { width: 18px; height: 18px; box-shadow: inset -6px 2px 0 0 #2F3E35; }
+  .lune-hero { height: auto; padding: 6px 20px 0; grid-template-columns: 1fr; align-items: start; gap: 24px; }
+  .lune-visual { order: -1; justify-self: stretch; width: auto; height: 290px; }
+  .lune-arch { border-radius: 175px 175px 20px 20px; }
+  .lune-card { display: none; }
+  .lune-eyebrow { font-size: 10.5px; }
+  .lune-title { margin-top: 12px; font-size: 50px; }
+  .lune-lead { margin-top: 14px; font-size: 14.5px; line-height: 1.55; }
+  .lune-actions { margin-top: 22px; gap: 10px; }
+  .lune-btn, .lune-ghost { height: 48px; padding: 0 20px; font-size: 14px; }
+  .lune-proof { display: none; }
+}
+
+/* ---------- 5. Vélo & Co — vélos électriques urbains ---------- */
+
+.site--velo { background: #C8962E; color: #151412; font-family: 'Manrope', 'Montserrat', sans-serif; }
+/* Photo en miroir : le mur ocre uni passe sous le titre, les briques sombres derrière la fiche produit */
+.site--velo picture { position: absolute; inset: 0; transform: scaleX(-1); }
+.velo-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 55%; }
+.velo-nav { position: absolute; z-index: 2; inset: 0 0 auto; height: 96px; padding: 0 200px 0 64px; display: flex; align-items: center; gap: 60px; }
+.velo-logo { font-size: 30px; font-weight: 800; letter-spacing: -0.05em; }
+.velo-logo b { color: #FFF4DC; font-weight: 800; }
+.velo-nav__links { display: flex; gap: 36px; font-size: 15.5px; font-weight: 700; }
+.velo-nav__tools { margin-left: auto; display: flex; align-items: center; gap: 28px; font-size: 15.5px; font-weight: 700; }
+.velo-cart b {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  margin-left: 6px;
+  border-radius: 50%;
+  background: #151412;
+  color: #F2C14E;
+  font-size: 12px;
+}
+.velo-title {
+  position: absolute;
+  z-index: 2;
+  left: 64px;
+  top: 134px;
+  font-family: 'Anton', Impact, sans-serif;
+  font-size: 140px;
+  line-height: .98;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+}
+.velo-card {
+  position: absolute;
+  z-index: 2;
+  right: 64px;
+  top: 160px;
+  width: 360px;
+  padding: 30px;
+  border-radius: 4px;
+  background: rgba(255, 247, 232, .95);
+  box-shadow: 0 30px 60px -30px rgba(40, 25, 0, .55);
+}
+.velo-card__tag { display: inline-block; padding: 5px 10px; background: #151412; color: #F2C14E; font-size: 11.5px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.velo-card__name { margin-top: 16px; font-family: 'Anton', Impact, sans-serif; font-size: 44px; line-height: 1; text-transform: uppercase; }
+.velo-card__desc { margin-top: 8px; font-size: 15px; font-weight: 600; color: #4B463C; }
+.velo-card__specs { margin-top: 20px; padding-top: 18px; border-top: 1px solid rgba(21, 20, 18, .15); display: grid; gap: 8px; font-size: 14.5px; color: #3B372F; }
+.velo-card__specs b { font-weight: 800; color: #151412; }
+.velo-card__price { margin-top: 22px; font-family: 'Anton', Impact, sans-serif; font-size: 40px; line-height: 1; }
+.velo-card__price small { margin-right: 6px; font-family: 'Manrope', 'Montserrat', sans-serif; font-size: 14px; font-weight: 700; }
+.velo-card__btn { margin-top: 20px; height: 56px; display: grid; place-items: center; background: #151412; color: #FFF4DC; font-size: 15.5px; font-weight: 800; letter-spacing: .02em; }
+.velo-card__link { margin-top: 14px; display: block; text-align: center; font-size: 14.5px; font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
+.velo-strip {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: #151412;
+  color: #F2C14E;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.velo-mobile-buy { display: none; }
+
+@container site (max-width: 700px) {
+  .velo-bg { object-position: 50% 50%; }
+  .velo-nav { height: 64px; padding: 0 20px; justify-content: space-between; background: #CE9A34; }
+  .velo-nav__links, .velo-nav__tools { display: none; }
+  .velo-logo { font-size: 22px; }
+  .velo-title { left: 20px; top: 90px; font-size: 76px; }
+  .velo-card, .velo-strip { display: none; }
+  .velo-mobile-buy {
+    position: absolute;
+    z-index: 2;
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    padding: 14px 14px 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 247, 232, .95);
+  }
+  .velo-mobile-buy p { font-size: 12.5px; font-weight: 700; }
+  .velo-mobile-buy b { display: block; font-family: 'Anton', Impact, sans-serif; font-size: 26px; font-weight: 400; line-height: 1.1; }
+  .velo-mobile-buy span { height: 46px; padding: 0 18px; display: grid; place-items: center; background: #151412; color: #FFF4DC; font-size: 13.5px; font-weight: 800; }
+}

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <radialGradient id="glow" cx=".15" cy=".95" r=".85">
+      <stop offset="0" stop-color="#FFB27A" stop-opacity=".9"/>
+      <stop offset="1" stop-color="#FFB27A" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%">
+      <feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#5A2A0A" flood-opacity=".28"/>
+    </filter>
+  </defs>
+  <rect width="128" height="128" fill="#F4E6D9"/>
+  <rect width="128" height="128" fill="url(#glow)"/>
+  <rect x="16" y="40" width="80" height="70" rx="10" fill="#FFFFFF" filter="url(#shadow)"/>
+  <rect x="26" y="51" width="30" height="5" rx="2.5" fill="#16110D"/>
+  <rect x="26" y="60" width="20" height="4" rx="2" fill="#D9CDC1"/>
+  <path d="M26 99 H86" stroke="#EFE6DC" stroke-width="1.5"/>
+  <polyline points="27,94 41,86 53,90 68,74 83,67" fill="none" stroke="#FF5A0A" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="83" cy="67" r="4.2" fill="#FF5A0A"/>
+  <rect x="62" y="16" width="50" height="36" rx="9" fill="#16110D" filter="url(#shadow)"/>
+  <path d="M79 27 L72 34 L79 41 M95 27 L102 34 L95 41 M90 25 L84 43" fill="none" stroke="#FF8A3D" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
