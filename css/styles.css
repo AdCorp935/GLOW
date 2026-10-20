@@ -1646,13 +1646,17 @@ textarea.field { height: auto; min-height: 116px; padding: 14px 16px; line-heigh
   border: 1px solid var(--card-line);
 }
 .legal__card + .legal__card { margin-top: 14px; }
+.notfound { min-height: 70vh; display: flex; flex-direction: column; justify-content: center; }
+.notfound .eyebrow { margin: 0 0 18px; }
+.notfound__actions { margin-top: 32px; display: flex; flex-wrap: wrap; gap: 12px; }
+.notfound__actions .btn--primary { height: 58px; padding: 0 28px; font-size: 16.5px; letter-spacing: -0.01em; }
 .legal h2 { scroll-margin-top: 100px; margin: 0 0 18px; font-size: clamp(26px, 3vw, 34px); line-height: 1.1; letter-spacing: -0.035em; font-weight: 500; }
 .legal h3 { margin: 30px 0 10px; font-size: 18px; letter-spacing: -0.015em; font-weight: 600; }
 .legal p, .legal li { font-size: 16px; line-height: 1.7; color: var(--muted); }
 .legal p { margin: 0 0 12px; }
 .legal ul { margin: 0 0 12px; padding-left: 20px; }
-.legal a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
-.legal a:hover { color: var(--orange-deep); }
+.legal a:not(.btn) { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
+.legal a:not(.btn):hover { color: var(--orange-deep); }
 .legal strong { color: var(--ink-2); font-weight: 600; }
 .todo { padding: 1px 6px; border-radius: 6px; background: #FFEEE2; color: #B43A00; font-weight: 500; }
 

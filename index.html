@@ -25,14 +25,13 @@
   <link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://images.unsplash.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap">
+  <link rel="preload" href="fonts/montserrat-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/realisations.css">
   <!-- Polices des sites clients du carrousel : chargées par main.js à l'approche de la section -->
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Cormorant+Garamond:ital,wght@0,500;1,500&amp;family=Fraunces:ital,wght@0,400;1,400&amp;family=Inter+Tight:wght@300;400;500&amp;family=Jost:wght@400;500;600&amp;family=Manrope:wght@500;600;700;800&amp;display=swap"></noscript>
+  <noscript><link rel="stylesheet" href="css/fonts-clients.css"></noscript>
 
   <script>
     (function (c) {
@@ -291,7 +290,7 @@
         et la légende correspondante (.showcase__detail) ; le style vit dans css/realisations.css.
       -->
       <div class="showcase" data-reveal="frame" role="region" aria-roledescription="carrousel" aria-label="Sites réalisés par Glow"
-           data-fonts="https://fonts.googleapis.com/css2?family=Anton&amp;family=Cormorant+Garamond:ital,wght@0,500;1,500&amp;family=Fraunces:ital,wght@0,400;1,400&amp;family=Inter+Tight:wght@300;400;500&amp;family=Jost:wght@400;500;600&amp;family=Manrope:wght@500;600;700;800&amp;display=swap">
+           data-fonts="css/fonts-clients.css">
         <div class="showcase__frame">
           <div class="showcase__bar" aria-hidden="true">
             <span class="showcase__dots"><i></i><i></i><i></i></span>
@@ -697,7 +696,7 @@
             </div>
             <div>
               <p class="plan__from">À partir de</p>
-              <p class="plan__price"><span class="plan__amount">2&nbsp;900&nbsp;€</span><span class="plan__tax">HT</span></p>
+              <p class="plan__price"><span class="plan__amount">1&nbsp;490&nbsp;€</span><span class="plan__tax">HT</span></p>
             </div>
             <ul class="plan__features">
               <li class="check">Site vitrine jusqu’à 5 pages</li>
@@ -949,12 +948,12 @@
         <ul class="footer__legal">
           <li><a href="mentions-legales.html">Mentions légales</a></li>
           <li><a href="mentions-legales.html#confidentialite">Confidentialité</a></li>
+          <li><a href="cgu.html">CGU</a></li>
           <li><a class="footer__top-link" href="#top">Haut de page ↑</a></li>
         </ul>
         <ul class="footer__social" aria-label="Glow sur les réseaux sociaux">
           <li><a href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram <span aria-hidden="true">↗</span></a></li>
           <li><a href="https://www.linkedin.com/" target="_blank" rel="noopener">LinkedIn <span aria-hidden="true">↗</span></a></li>
-          <li><a href="https://www.behance.net/" target="_blank" rel="noopener">Behance <span aria-hidden="true">↗</span></a></li>
         </ul>
       </div>
     </div>
