@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://glow-studio.fr/sitemap.xml
+Sitemap: https://glow-agency.fr/sitemap.xml
